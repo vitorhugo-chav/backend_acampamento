@@ -14,7 +14,9 @@ class SubscriptionController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return SubscriptionResource::collection(Subscription::paginate());
+        return SubscriptionResource::collection(
+            Subscription::with(['user', 'spouse', 'event', 'sector', 'selectionMethod'])->paginate()
+        );
     }
 
     public function store(StoreSubscriptionRequest $request): SubscriptionResource

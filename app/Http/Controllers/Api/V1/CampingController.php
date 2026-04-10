@@ -14,7 +14,7 @@ class CampingController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return CampingResource::collection(Camping::paginate());
+        return CampingResource::collection(Camping::with('event')->paginate());
     }
 
     public function store(StoreCampingRequest $request): CampingResource
@@ -24,7 +24,7 @@ class CampingController extends Controller
 
     public function show(Camping $camping): CampingResource
     {
-        return CampingResource::make($camping);
+        return CampingResource::make($camping->load('event'));
     }
 
     public function update(UpdateCampingRequest $request, Camping $camping): CampingResource

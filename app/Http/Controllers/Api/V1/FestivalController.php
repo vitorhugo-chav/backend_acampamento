@@ -14,7 +14,7 @@ class FestivalController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return FestivalResource::collection(Festival::paginate());
+        return FestivalResource::collection(Festival::with('event')->paginate());
     }
 
     public function store(StoreFestivalRequest $request): FestivalResource
@@ -24,7 +24,7 @@ class FestivalController extends Controller
 
     public function show(Festival $festival): FestivalResource
     {
-        return FestivalResource::make($festival);
+        return FestivalResource::make($festival->load('event'));
     }
 
     public function update(UpdateFestivalRequest $request, Festival $festival): FestivalResource
