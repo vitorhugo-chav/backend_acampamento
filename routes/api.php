@@ -26,10 +26,23 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('selection-methods', SelectionMethodController::class);
         Route::apiResource('sectors', SectorController::class);
+
+        // Available campings for the authenticated user (MUST be before apiResource)
+        Route::get('campings/available', [CampingController::class, 'available'])
+            ->name('campings.available');
+
         Route::apiResource('campings', CampingController::class);
         Route::apiResource('festivals', FestivalController::class);
         Route::apiResource('events', EventController::class);
         Route::apiResource('subscriptions', SubscriptionController::class);
         Route::apiResource('users', UserController::class)->except('store');
+
+        // Custom validation endpoint for event participation
+        Route::get('events/{event}/validate-participation', [EventController::class, 'validateParticipation'])
+            ->name('events.validate-participation');
+
+        // Available campings for the authenticated user
+        Route::get('campings/available', [CampingController::class, 'available'])
+            ->name('campings.available');
     });
 });

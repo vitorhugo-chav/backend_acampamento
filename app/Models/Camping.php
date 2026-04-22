@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'servant_registration_end_date',
     'servant_payment_link',
     'servant_payment_date',
+    'type',
 ])]
 class Camping extends Model
 {
@@ -69,11 +70,11 @@ class Camping extends Model
             'raffle_servant_date' => 'datetime',
             'camper_registration_start_date' => 'datetime',
             'camper_registration_end_date' => 'datetime',
-            'camper_payment_link' => 'datetime',
+            'camper_payment_link' => 'string',
             'camper_payment_date' => 'datetime',
             'servant_registration_start_date' => 'datetime',
             'servant_registration_end_date' => 'datetime',
-            'servant_payment_link' => 'datetime',
+            'servant_payment_link' => 'string',
             'servant_payment_date' => 'datetime',
         ];
     }
@@ -81,5 +82,21 @@ class Camping extends Model
     public function event(): MorphOne
     {
         return $this->morphOne(Event::class, 'eventable');
+    }
+
+    public function scopePast($query)
+    {
+        return $query->where('camper_registration_end_date', '<', now());
+    }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('camper_registration_start_date', '<=', now())
+            ->where('camper_registration_end_date', '>=', now());
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('camper_registration_start_date', '>', now());
     }
 }

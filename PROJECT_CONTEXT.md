@@ -20,15 +20,37 @@ Backend de uma API REST para gestão do **Acampamento São Miguel Arcanjo**. O s
 
 | Modelo | Descrição |
 |---|---|
-| `User` | Usuários do sistema (campistas, coordenadores). CPF como identificador principal. |
+| `User` | Usuários do sistema (campistas, coordenadores). CPF como identificador principal. Campo `living_together` indica se mora com parceiro. |
 | `Subscription` | Inscrições de usuários em eventos. |
-| `Camping` | Acampamentos (datas, vagas, taxas, regras). |
+| `Camping` | Acampamentos com tipos fixos (Mirin, FAC, Juvenil, Senior, Casais). |
 | `Festival` | Festivais. |
 | `Event` | Eventos genéricos (polimórfico - pode ser Camping ou Festival). |
 | `MaritalStatus` | Estado civil. |
 | `Role` | Papéis (Campista, Coordenador, etc). |
 | `Sector` | Setores do acampamento. |
 | `SelectionMethod` | Métodos de seleção (Sorteio, Forania, Conselho, Base). |
+
+### Enums
+
+| Enum | Valores |
+|---|---|
+| `Sex` | M, F |
+| `SubscriptionType` | Camper, Servant |
+| `CampingType` | mirin (10-12), fac (14-17), juvenil (18-24), senior (25-60), casais (18+) |
+
+### Tipos de Acampamento
+
+O campo `type` no modelo `Camping` define a categoria:
+
+| Tipo | Idade | Observações |
+|---|---|---|
+| Mirin | 10-12 anos | Apenas indivíduos |
+| FAC | 14-17 anos | Apenas indivíduos |
+| Juvenil | 18-24 anos | Apenas indivíduos |
+| Senior | 25-60 anos | Apenas indivíduos |
+| Casais | 18+ anos | Casaismorando juntos, vagas para casal |
+
+---
 
 ### API Endpoints
 
@@ -42,6 +64,15 @@ A API segue o padrão versionado em `api/v1/`:
 -   `POST /api/v1/logout` - Logout
 -   `GET /api/v1/user` - Dados do usuário autenticado
 -   `apiResource` completo para: `marital-statuses`, `roles`, `selection-methods`, `sectors`, `campings`, `festivals`, `events`, `subscriptions`, `users`
+-   `GET /api/v1/events/{event}/validate-participation` - Valida se usuário pode participar (por idade)
+-   `GET /api/v1/campings?status=past|open|upcoming` - Filtra acampamentos por status de inscrição
+-   `GET /api/v1/campings/available` - Lista acampamentos disponíveis para o usuário (filtra por living_together)
+
+---
+
+## Perguntas em Aberto (perguntar ao professor)
+
+-   Os filtros de acampamento (`past`/`open`/`upcoming`) usam a data de **inscrição**. Perguntar se devemos usar a data do **evento** (`start_date` do Event vinculado) para filtros mais precisos para o usuário final.
 
 ---
 
@@ -79,6 +110,18 @@ A API segue o padrão versionado em `api/v1/`:
 -   Criação da rota `POST /api/v1/register`.
 -   Merge realizado com sucesso para a branch `main`.
 
+### Commit 4: Local (pendente de commit)
+**Mensagem**: `feat: add camping types, age validation and living together filter`
+
+**Descrição**: Implementação de tipos de acampamento, validação de idade e filtro de casaismorando juntos.
+-   Criação do enum `CampingType` (mirin, fac, juvenil, senior, casais).
+-   Migration adicionando coluna `type` na tabela `campings`.
+-   Seeder `CampingSeeder` com acampamentos de exemplo para cada tipo.
+-   Endpoint `GET /api/v1/events/{event}/validate-participation`.
+-   Correção do campo `payment_link` (string ao invés de datetime).
+-   Scopes `past()`, `open()`, `upcoming()` no modelo `Camping`.
+-   Endpoint `GET /api/v1/campings/available` filtrando por `living_together`.
+
 ---
 
 ## Preferências de Trabalho
@@ -90,32 +133,34 @@ A IA deve atuar como **um professor experiente**, não como um desenvolvedor que
 ### Diretrizes de Interação
 
 1.  **Análise Antecipada**: Antes de implementar qualquer funcionalidade, **SEMPRE** apresentar o plano de ação ao usuário e perguntar se pode prosseguir.
-    -   Exemplo: "Vou criar a rota X, alterar o controller Y e validar com o request Z. Posso continuar?"
+     -   Exemplo: "Vou criar a rota X, alterar o controller Y e validar com o request Z. Posso continuar?"
 
 2.  **Explicação ao Invés de Entrega Direta**:
-    -   NÃO entregar código de bandeja.
-    -   Explicar o que cada alteração faz e perguntar se o usuário quer que continue.
-    -   Quando possível, mostrar as alterações antes de aplicar (especialmente em arquivos sensíveis como controllers).
+     -   NÃO entregar código de bandeja.
+     -   Explicar o que cada alteração faz e perguntar se o usuário quer que continue.
+     -   Quando possível, mostrar as alterações antes de aplicar (especialmente em arquivos sensíveis como controllers).
 
 3.  **Commits com Conventional Commits**:
-    -   Sempre seguir o padrão: `feat:`, `fix:`, `refactor:`, etc.
-    -   Mensagens claras e concisas.
+     -   Sempre seguir o padrão: `feat:`, `fix:`, `refactor:`, etc.
+     -   Mensagens claras e concisas.
 
 4.  **Validação Contínua**:
-    -   Sempre que possível, testar endpoints via Insomnia/cURL antes de finalizar.
-    -   Garantir que o banco de dados e migrations estejam em dia.
+     -   Sempre que possível, testar endpoints via Insomnia/cURL antes de finalizar.
+     -   Garantir que o banco de dados e migrations estejam em dia.
 
 5.  **Ramificação (Branching)**:
-    -   Criar novas branches para funcionalidades (ex: `feat/user-registration-cpf`).
-    -   Fazer merge para `main` após validação.
+     -   Criar novas branches para funcionalidades (ex: `feat/user-registration-cpf`).
+     -   Fazer merge para `main` após validação.
 
 ---
 
 ## Próximos Passos Sugeridos
 
-1.  Push para repositório remoto (pendente de configuração de SSH).
-2.  Implementação de endpoints para gestão de setores e funções dentro do acampamento.
+1.  Commit das alterações locais (tipos de acampamento e validação de idade).
+2.  Push para repositório remoto.
 3.  Criação de testes automatizados com PestPHP.
+4.  Implementação de validação de casaismorando juntos (is_couple).
+5.  Endpoint de inscrição com validação automática de idade.
 
 ---
 

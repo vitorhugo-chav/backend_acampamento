@@ -24,6 +24,7 @@ use Laravel\Sanctum\HasApiTokens;
     'is_counselor',
     'password',
     'marital_status_id',
+    'living_together',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -43,6 +44,7 @@ class User extends Authenticatable
             'sex' => Sex::class,
             'is_counselor' => 'boolean',
             'password' => 'hashed',
+            'living_together' => 'boolean',
         ];
     }
 

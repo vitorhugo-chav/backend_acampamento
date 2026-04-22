@@ -14,7 +14,32 @@ class CampingController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return CampingResource::collection(Camping::with('event')->paginate());
+        $query = Camping::with('event');
+
+        $status = request()->query('status');
+
+        if ($status === 'past') {
+            $query->past();
+        } elseif ($status === 'open') {
+            $query->open();
+        } elseif ($status === 'upcoming') {
+            $query->upcoming();
+        }
+
+        return CampingResource::collection($query->paginate());
+    }
+
+    public function available(): AnonymousResourceCollection
+    {
+        $user = request()->user();
+
+        $query = Camping::with('event')->upcoming();
+
+        if ($user->living_together) {
+            $query->whereIn('type', ['senior', 'casais']);
+        }
+
+        return CampingResource::collection($query->paginate());
     }
 
     public function store(StoreCampingRequest $request): CampingResource

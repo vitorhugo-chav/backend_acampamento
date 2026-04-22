@@ -42,11 +42,11 @@ return new class extends Migration
 
             $table->datetime('camper_registration_start_date');
             $table->datetime('camper_registration_end_date');
-            $table->datetime('camper_payment_link');
+            $table->string('camper_payment_link');
             $table->datetime('camper_payment_date');
             $table->datetime('servant_registration_start_date');
             $table->datetime('servant_registration_end_date');
-            $table->datetime('servant_payment_link');
+            $table->string('servant_payment_link');
             $table->datetime('servant_payment_date');
 
             $table->timestamps();
